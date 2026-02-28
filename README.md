@@ -12,7 +12,7 @@ Many small businesses rely on manual or inefficient methods to manage inventory,
 - Inventory managers
 - Shelf stockers
 
-## Core Features (Planned)
+## Core Features (Implemented in Milestone 2)
 - Search inventory and view product availability
 - Add, update, and remove inventory items
 - Track product quantities and stock levels
