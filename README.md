@@ -42,18 +42,15 @@ The repo includes a Supabase-based backend in `backend/`:
 No Node server is required: the front-end talks to Supabase from the browser. For a separate Express/PostgreSQL server, use the `server/` folder when present.
 
 ## Project Structure
-/docs - Documentation and meeting notes
-/src - Source code
-README.md - Project overview
-## Team Members
-- George Xie  
-- Jibin Im  
-- Calvin Nguyen  
+- /docs - Documentation and meeting notes.
+- /src - Source code
+- README.md - Project overview
 
 ## Project Management
-- GitHub Projects Kanban board is used for task tracking
-- Milestones and tasks are assigned and updated regularly
-- Team communication is handled via Discord and Instagram group chat
+
+-  George Xie: Implemented front-end UI components and logic, managed state, and integrated with Supabase backend.
+-  Jibin Im: Designed and implemented the Supabase backend, including database schema, API endpoints, and data models.
+-  Calvin Nguyen: Worked on front-end UI and testing.
 
 ## Status
 Milestone 1 – Planning and initial setup completed.  
