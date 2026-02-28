@@ -2,99 +2,146 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Browse Products — Inventory Management System</title>
+  <link rel="stylesheet" href="inventory.css">
 </head>
 <body>
+  <div id="app">
+    <aside class="sidebar">
+      <div class="sidebar__logo">Inventory</div>
+      <ul class="sidebar__nav">
+        <li><a href="customer-dashboard.html" class="active">Browse Products</a></li>
+      </ul>
+      <div class="sidebar__logout">
+        <a href="log-in.html">Logout</a>
+      </div>
+    </aside>
 
-<h2>Inventory Management System</h2>
-<a href="log-in.html">Logout</a>
-<hr>
+    <main class="main">
+      <header class="main__header">
+        <h1 class="main__title">Browse Products</h1>
+      </header>
 
-<form method="GET" action="#">
-  <fieldset>
-    <legend>Search & Filter</legend>
-    <label for="search">Search:</label>
-    <input type="text" id="search" name="search" placeholder="Search product name...">
+      <div class="toolbar">
+        <input type="text" id="search" class="toolbar__search" placeholder="Search product name..." autocomplete="off">
+        <select id="category-filter" class="toolbar__select">
+          <option value="">All Categories</option>
+        </select>
+        <select id="status-filter" class="toolbar__select">
+          <option value="">All Status</option>
+          <option value="ok">In Stock</option>
+          <option value="low">Low Stock</option>
+          <option value="out">Out of Stock</option>
+        </select>
+      </div>
 
-    <label for="category">Category:</label>
-    <select id="category" name="category">
-      <option value="">All Categories</option>
-      <option value="Electronics">Electronics</option>
-      <option value="Furniture">Furniture</option>
-      <option value="Accessories">Accessories</option>
-    </select>
+      <div class="table-wrap">
+        <table class="inventory-table">
+          <thead>
+            <tr>
+              <th class="col-id">ID</th>
+              <th>Product Name</th>
+              <th>Category</th>
+              <th class="col-price">Price</th>
+              <th class="col-status">Status</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
 
-    <label for="status">Status:</label>
-    <select id="status" name="status">
-      <option value="">All Status</option>
-      <option value="instock">In Stock</option>
-      <option value="lowstock">Low Stock</option>
-      <option value="outstock">Out of Stock</option>
-    </select>
+  <script>
+    (function () {
+      var CATEGORIES = [
+        { id: 1, category_name: 'Electronics' },
+        { id: 2, category_name: 'Furniture' },
+        { id: 3, category_name: 'Accessories' },
+        { id: 4, category_name: 'Stationery' },
+        { id: 5, category_name: 'Consumables' }
+      ];
+      var products = [
+        { id: 1, item_name: 'Monitor 34"', item_description: '34-inch ultrawide display, 144Hz', price: 799.00, item_count: 12, low_stock_limit: 5, category_id: 1 },
+        { id: 2, item_name: 'Mechanical Keyboard', item_description: 'RGB, Cherry MX Brown', price: 149.99, item_count: 3, low_stock_limit: 5, category_id: 3 },
+        { id: 3, item_name: 'Ergonomic Desk Chair', item_description: 'Adjustable lumbar, mesh back', price: 549.00, item_count: 0, low_stock_limit: 3, category_id: 2 },
+        { id: 4, item_name: 'Wireless Headphones ANC', item_description: 'Active noise cancelling, 30h battery', price: 299.00, item_count: 27, low_stock_limit: 10, category_id: 1 },
+        { id: 5, item_name: 'Standing Desk', item_description: 'Electric height adjustable', price: 1099.00, item_count: 8, low_stock_limit: 4, category_id: 2 },
+        { id: 6, item_name: 'USB-C Hub', item_description: '7-in-1 with HDMI and SD', price: 49.99, item_count: 4, low_stock_limit: 8, category_id: 3 },
+        { id: 7, item_name: 'Desk Lamp LED', item_description: 'Dimmable, USB charging', price: 39.00, item_count: 0, low_stock_limit: 5, category_id: 2 },
+        { id: 8, item_name: 'Notebook Set (5pk)', item_description: 'A5 ruled, 200 pages', price: 12.99, item_count: 45, low_stock_limit: 20, category_id: 4 },
+        { id: 9, item_name: 'Whiteboard Markers (8)', item_description: 'Chisel tip, assorted', price: 14.50, item_count: 6, low_stock_limit: 10, category_id: 4 },
+        { id: 10, item_name: 'Stapler Heavy Duty', item_description: 'Metal base, 100 sheet capacity', price: 24.00, item_count: 2, low_stock_limit: 5, category_id: 4 }
+      ];
 
-    <input type="submit" value="Filter">
-    <input type="reset" value="Reset">
-  </fieldset>
+      function getCategoryName(cid) {
+        var c = CATEGORIES.find(function (x) { return x.id === cid; });
+        return c ? c.category_name : 'Uncategorized';
+      }
+      function getStockStatus(count, limit) {
+        if (count === 0) return 'out';
+        if (count < limit) return 'low';
+        return 'ok';
+      }
+      function formatPrice(n) { return '$' + Number(n).toFixed(2); }
 
-  <br>
+      var searchEl = document.getElementById('search');
+      var catEl = document.getElementById('category-filter');
+      var statusEl = document.getElementById('status-filter');
+      var tbody = document.getElementById('table-body');
 
-  <table id="inventoryTable">
-    <caption><b>Product Inventory</b></caption>
-    <thead>
-      <tr>
-        <th>Product Name</th>
-        <th>Category</th>
-        <th>Quantity</th>
-        <th>Price</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Monitor 34"</td>
-        <td>Electronics</td>
-        <td>12</td>
-        <td>$799.00</td>
-        <td>In Stock</td>
-        <td><a href="product-page.html"><button type="button">Details</button></a></td>
-      </tr>
-      <tr>
-        <td>Mechanical Keyboard</td>
-        <td>Accessories</td>
-        <td>3</td>
-        <td>$149.99</td>
-        <td>Low Stock</td>
-        <td><a href="product-page.html"><button type="button">Details</button></a></td>
-      </tr>
-      <tr>
-        <td>Ergonomic Desk Chair</td>
-        <td>Furniture</td>
-        <td>0</td>
-        <td>$549.00</td>
-        <td>Out of Stock</td>
-        <td><a href="product-page.html"><button type="button">Details</button></a></td>
-      </tr>
-      <tr>
-        <td>Wireless Headphones ANC</td>
-        <td>Electronics</td>
-        <td>27</td>
-        <td>$299.00</td>
-        <td>In Stock</td>
-        <td><a href="product-page.html"><button type="button">Details</button></a></td>
-      </tr>
-      <tr>
-        <td>Standing Desk</td>
-        <td>Furniture</td>
-        <td>8</td>
-        <td>$1099.00</td>
-        <td>In Stock</td>
-        <td><a href="product-page.html"><button type="button">Details</button></a></td>
-      </tr>
-    </tbody>
-  </table>
+      CATEGORIES.forEach(function (c) {
+        var opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.category_name;
+        catEl.appendChild(opt);
+      });
 
-</form>
+      function render() {
+        var search = searchEl.value.trim().toLowerCase();
+        var cat = catEl.value;
+        var status = statusEl.value;
+        var list = products.filter(function (p) {
+          var nameOk = !search || p.item_name.toLowerCase().indexOf(search) !== -1;
+          var catOk = !cat || String(p.category_id) === cat;
+          var st = getStockStatus(p.item_count, p.low_stock_limit);
+          var statusOk = !status || st === status;
+          return nameOk && catOk && statusOk;
+        });
 
+        if (list.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><p>No products match your filters.</p></td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = list.map(function (p) {
+          var st = getStockStatus(p.item_count, p.low_stock_limit);
+          var label = st === 'ok' ? 'In Stock' : st === 'low' ? 'Low Stock' : 'Out of Stock';
+          return '<tr>' +
+            '<td class="col-id">' + p.id + '</td>' +
+            '<td>' + escapeHtml(p.item_name) + '</td>' +
+            '<td>' + escapeHtml(getCategoryName(p.category_id)) + '</td>' +
+            '<td class="col-price">' + formatPrice(p.price) + '</td>' +
+            '<td class="col-status"><span class="stock-badge stock-badge--' + st + '">' + label + '</span></td>' +
+            '<td class="col-actions"><a href="product-page.html?id=' + p.id + '" class="btn btn--primary">View</a></td>' +
+            '</tr>';
+        }).join('');
+      }
+
+      function escapeHtml(s) {
+        if (!s) return '';
+        var d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+      }
+
+      searchEl.oninput = render;
+      catEl.onchange = render;
+      statusEl.onchange = render;
+      render();
+    })();
+  </script>
 </body>
 </html>

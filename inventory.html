@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inventory Management System</title>
+  <link rel="stylesheet" href="inventory.css">
+  <!-- Optional: add supabaseConfig.js (copy from backend/supabaseConfig.example.js) to use Supabase backend -->
+  <script type="module" src="api-bridge.js"></script>
+</head>
+<body>
+  <div id="app">
+    <aside class="sidebar">
+      <div class="sidebar__logo">Inventory</div>
+      <ul class="sidebar__nav">
+        <li><a href="#" id="nav-dashboard" class="active">Dashboard</a></li>
+      </ul>
+      <div class="sidebar__logout">
+        <a href="log-in.html">Logout</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <!-- Dashboard view -->
+      <div id="view-dashboard" class="view active">
+        <header class="main__header">
+          <h1 class="main__title">Inventory Dashboard</h1>
+          <button type="button" id="btn-add" class="btn btn--primary">Add Product</button>
+        </header>
+
+        <div class="stat-cards">
+          <div class="stat-card">
+            <div id="stat-in" class="stat-card__value">0</div>
+            <div class="stat-card__label">In Stock</div>
+          </div>
+          <div class="stat-card">
+            <div id="stat-low" class="stat-card__value">0</div>
+            <div class="stat-card__label">Low Stock</div>
+          </div>
+          <div class="stat-card">
+            <div id="stat-out" class="stat-card__value">0</div>
+            <div class="stat-card__label">Out of Stock</div>
+          </div>
+          <div class="stat-card">
+            <div id="stat-total" class="stat-card__value">0</div>
+            <div class="stat-card__label">Total Products</div>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <input type="text" id="search" class="toolbar__search" placeholder="Search product name..." autocomplete="off">
+          <select id="category-filter" class="toolbar__select">
+            <option value="">All Categories</option>
+          </select>
+          <select id="status-filter" class="toolbar__select">
+            <option value="">All Status</option>
+            <option value="ok">In Stock</option>
+            <option value="low">Low Stock</option>
+            <option value="out">Out of Stock</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table class="inventory-table">
+            <thead>
+              <tr>
+                <th class="col-id">ID</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th class="col-qty">Qty</th>
+                <th class="col-price">Price</th>
+                <th class="col-status">Status</th>
+                <th class="col-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="table-body">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Product detail view -->
+      <div id="view-detail" class="view">
+        <div class="detail">
+          <div id="detail-back" class="detail__back">
+            <button type="button" class="btn btn--ghost">← Back to Dashboard</button>
+          </div>
+          <div id="detail-content" class="detail__card">
+            <h2 id="detail-title" class="detail__title"></h2>
+            <p id="detail-meta" class="detail__meta"></p>
+            <p id="detail-desc" class="detail__description"></p>
+            <div class="detail__grid">
+              <div>
+                <div class="detail__value-label">Quantity on hand</div>
+                <div id="detail-qty" class="detail__value"></div>
+              </div>
+              <div>
+                <div class="detail__value-label">Inventory value (qty × price)</div>
+                <div id="detail-value" class="detail__value"></div>
+              </div>
+            </div>
+            <div id="detail-progress-wrap" class="detail__progress-wrap">
+              <div class="detail__progress-label">Stock level vs low-stock threshold</div>
+              <div class="detail__progress-bar">
+                <div id="detail-progress-fill" class="detail__progress-fill"></div>
+              </div>
+            </div>
+            <div id="detail-actions" class="detail__actions"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Add / Edit Product modal -->
+  <div id="modal-overlay" class="modal-overlay" aria-hidden="true">
+    <div id="modal" class="modal" role="dialog" aria-labelledby="modal-title">
+      <div class="modal__header">
+        <h2 id="modal-title" class="modal__title">Add Product</h2>
+        <button type="button" id="modal-close" class="modal__close" aria-label="Close">&times;</button>
+      </div>
+      <div id="modal-body" class="modal__body">
+        <div class="form-fields">
+          <div class="form-group">
+            <label for="form-item-name">Product name <span class="required">*</span></label>
+            <input type="text" id="form-item-name" required placeholder="e.g. Wireless Mouse">
+          </div>
+          <div class="form-group">
+            <label for="form-item-desc">Description</label>
+            <textarea id="form-item-desc" placeholder="Optional product details"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="form-price">Price ($)</label>
+            <input type="number" id="form-price" min="0" step="0.01" value="0" placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label for="form-item-count">Quantity</label>
+            <input type="number" id="form-item-count" min="0" value="0" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="form-low-stock-limit">Low-stock alert threshold</label>
+            <input type="number" id="form-low-stock-limit" min="0" value="5" placeholder="5">
+          </div>
+          <div class="form-group">
+            <label for="form-category-id">Category</label>
+            <select id="form-category-id">
+              <!-- options filled by JS -->
+            </select>
+          </div>
+        </div>
+        <div class="confirm-content" style="display: none;">
+          <p id="confirm-message"></p>
+        </div>
+      </div>
+      <div id="modal-footer" class="modal__footer">
+        <button type="button" id="form-cancel" class="btn btn--ghost">Cancel</button>
+        <button type="button" id="form-save" class="btn btn--primary">Save</button>
+        <button type="button" id="confirm-cancel" class="btn btn--ghost" style="display: none;">Cancel</button>
+        <button type="button" id="confirm-ok" class="btn btn--danger" style="display: none;">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="inventory.js"></script>
+</body>
+</html>

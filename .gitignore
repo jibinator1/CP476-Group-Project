@@ -1,0 +1,9 @@
+# Supabase config with real keys (copy from backend/supabaseConfig.example.js)
+backend/supabaseConfig.js
+supabaseConfig.js
+
+# Dependencies and env
+node_modules/
+.env
+.env.local
+*.log

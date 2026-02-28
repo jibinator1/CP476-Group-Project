@@ -2,42 +2,115 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Product Detail</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Product — Inventory Management System</title>
+  <link rel="stylesheet" href="inventory.css">
 </head>
 <body>
+  <div id="app">
+    <aside class="sidebar">
+      <div class="sidebar__logo">Inventory</div>
+      <ul class="sidebar__nav">
+        <li><a href="customer-dashboard.html" class="active">← Back to Browse</a></li>
+      </ul>
+      <div class="sidebar__logout">
+        <a href="log-in.html">Logout</a>
+      </div>
+    </aside>
 
-<div id="topBar">
-  <input type="text" id="searchBar" placeholder="Search...">
-  <input type="submit" value="Search">
-  <a href="dashboard.html" id="backLink">Back to Inventory</a>
-</div>
-
-<div id="productBox">
-
-  <div id="productLeft">
-    <img src="images.jpg" alt="Product Image" width="200">
-    <br><br>
-    <div id="compareBox">
-      Compare with other brands suppliers
-    </div>
+    <main class="main">
+      <div id="product-content">
+        <!-- Filled by JS from ?id= -->
+        <p class="empty-state">Loading…</p>
+      </div>
+    </main>
   </div>
 
-  <div id="productRight">
-    <h3>Product Description</h3>
-    <p>34-inch asus monitor</p>
+  <script>
+    (function () {
+      var products = [
+        { id: 1, item_name: 'Monitor 34"', item_description: '34-inch ultrawide display, 144Hz', price: 799.00, item_count: 12, low_stock_limit: 5, category_id: 1 },
+        { id: 2, item_name: 'Mechanical Keyboard', item_description: 'RGB, Cherry MX Brown', price: 149.99, item_count: 3, low_stock_limit: 5, category_id: 3 },
+        { id: 3, item_name: 'Ergonomic Desk Chair', item_description: 'Adjustable lumbar, mesh back', price: 549.00, item_count: 0, low_stock_limit: 3, category_id: 2 },
+        { id: 4, item_name: 'Wireless Headphones ANC', item_description: 'Active noise cancelling, 30h battery', price: 299.00, item_count: 27, low_stock_limit: 10, category_id: 1 },
+        { id: 5, item_name: 'Standing Desk', item_description: 'Electric height adjustable', price: 1099.00, item_count: 8, low_stock_limit: 4, category_id: 2 },
+        { id: 6, item_name: 'USB-C Hub', item_description: '7-in-1 with HDMI and SD', price: 49.99, item_count: 4, low_stock_limit: 8, category_id: 3 },
+        { id: 7, item_name: 'Desk Lamp LED', item_description: 'Dimmable, USB charging', price: 39.00, item_count: 0, low_stock_limit: 5, category_id: 2 },
+        { id: 8, item_name: 'Notebook Set (5pk)', item_description: 'A5 ruled, 200 pages', price: 12.99, item_count: 45, low_stock_limit: 20, category_id: 4 },
+        { id: 9, item_name: 'Whiteboard Markers (8)', item_description: 'Chisel tip, assorted', price: 14.50, item_count: 6, low_stock_limit: 10, category_id: 4 },
+        { id: 10, item_name: 'Stapler Heavy Duty', item_description: 'Metal base, 100 sheet capacity', price: 24.00, item_count: 2, low_stock_limit: 5, category_id: 4 }
+      ];
 
-    <p id="price">$799.00</p>
+      var CATEGORIES = [
+        { id: 1, category_name: 'Electronics' },
+        { id: 2, category_name: 'Furniture' },
+        { id: 3, category_name: 'Accessories' },
+        { id: 4, category_name: 'Stationery' },
+        { id: 5, category_name: 'Consumables' }
+      ];
 
-    <label for="qty">Qty:</label>
-    <input type="number" id="qty" name="qty" value="1" min="1" size="4">
+      function getCategoryName(cid) {
+        var c = CATEGORIES.find(function (x) { return x.id === cid; });
+        return c ? c.category_name : '';
+      }
+      function getStockStatus(count, limit) {
+        if (count === 0) return 'out';
+        if (count < limit) return 'low';
+        return 'ok';
+      }
+      function formatPrice(n) { return '$' + Number(n).toFixed(2); }
 
-    <br><br>
-    <button type="button" id="cartBtn">Add to Cart</button><br><br>
-    <button type="button" id="buyBtn">Buy Now</button>
-  </div>
+      var params = new URLSearchParams(window.location.search);
+      var id = parseInt(params.get('id'), 10);
+      var product = products.find(function (p) { return p.id === id; });
+      var container = document.getElementById('product-content');
 
-</div>
+      if (!product) {
+        container.innerHTML = '<p class="empty-state">Product not found. <a href="customer-dashboard.html">Back to Browse</a></p>';
+        return;
+      }
 
+      var st = getStockStatus(product.item_count, product.low_stock_limit);
+      var stockLabel = st === 'ok' ? 'In Stock' : st === 'low' ? 'Low Stock' : 'Out of Stock';
+      var maxQty = Math.min(product.item_count, 99);
+      if (product.item_count === 0) maxQty = 0;
+
+      container.innerHTML =
+        '<div class="detail__back"><a href="customer-dashboard.html" class="btn btn--ghost">← Back to Browse</a></div>' +
+        '<div class="detail__card">' +
+          '<div class="product-view">' +
+            '<div><img src="images.jpg" alt="" class="product-view__image" onerror="this.style.background=\'var(--border)\';this.alt=\'No image\';"></div>' +
+            '<div class="product-view__info">' +
+              '<h1>' + escapeHtml(product.item_name) + '</h1>' +
+              '<p class="detail__meta">' + escapeHtml(getCategoryName(product.category_id)) + ' · <span class="stock-badge stock-badge--' + st + '">' + stockLabel + '</span></p>' +
+              '<p class="product-view__price">' + formatPrice(product.price) + '</p>' +
+              '<p class="product-view__desc">' + escapeHtml(product.item_description || 'No description.') + '</p>' +
+              '<div class="form-group"><label for="qty">Quantity</label><input type="number" id="qty" class="product-view__qty" value="1" min="1" max="' + maxQty + '"></div>' +
+              '<div class="product-view__actions" style="margin-top:1rem;">' +
+                '<button type="button" id="cart-btn" class="btn btn--accent">Add to Cart</button>' +
+                '<button type="button" id="buy-btn" class="btn btn--primary">Buy Now</button>' +
+              '</div>' +
+              '<p id="compare-note" class="detail__meta" style="margin-top:1.5rem;">Compare with other brands & suppliers</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+
+      function escapeHtml(s) {
+        if (!s) return '';
+        var d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+      }
+
+      document.getElementById('cart-btn').onclick = function () {
+        var q = parseInt(document.getElementById('qty').value, 10) || 1;
+        alert('Added ' + q + ' × ' + product.item_name + ' to cart. (Demo: cart not persisted.)');
+      };
+      document.getElementById('buy-btn').onclick = function () {
+        var q = parseInt(document.getElementById('qty').value, 10) || 1;
+        alert('Buy Now: ' + q + ' × ' + product.item_name + '. (Demo: checkout not implemented.)');
+      };
+    })();
+  </script>
 </body>
 </html>
