@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard</title>
+</head>
+<body>
+
+<h2>Inventory Management System</h2>
+<a href="log-in.html">Logout</a>
+<hr>
+
+<form method="GET" action="#">
+  <fieldset>
+    <legend>Search & Filter</legend>
+    <label for="search">Search:</label>
+    <input type="text" id="search" name="search" placeholder="Search product name...">
+
+    <label for="category">Category:</label>
+    <select id="category" name="category">
+      <option value="">All Categories</option>
+      <option value="Electronics">Electronics</option>
+      <option value="Furniture">Furniture</option>
+      <option value="Accessories">Accessories</option>
+    </select>
+
+    <label for="status">Status:</label>
+    <select id="status" name="status">
+      <option value="">All Status</option>
+      <option value="instock">In Stock</option>
+      <option value="lowstock">Low Stock</option>
+      <option value="outstock">Out of Stock</option>
+    </select>
+
+    <input type="submit" value="Filter">
+    <input type="reset" value="Reset">
+  </fieldset>
+
+  <br>
+
+  <table id="inventoryTable">
+    <caption><b>Product Inventory</b></caption>
+    <thead>
+      <tr>
+        <th>Product Name</th>
+        <th>Category</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Monitor 34"</td>
+        <td>Electronics</td>
+        <td>12</td>
+        <td>$799.00</td>
+        <td>In Stock</td>
+        <td><a href="product-page.html"><button type="button">Details</button></a></td>
+      </tr>
+      <tr>
+        <td>Mechanical Keyboard</td>
+        <td>Accessories</td>
+        <td>3</td>
+        <td>$149.99</td>
+        <td>Low Stock</td>
+        <td><a href="product-page.html"><button type="button">Details</button></a></td>
+      </tr>
+      <tr>
+        <td>Ergonomic Desk Chair</td>
+        <td>Furniture</td>
+        <td>0</td>
+        <td>$549.00</td>
+        <td>Out of Stock</td>
+        <td><a href="product-page.html"><button type="button">Details</button></a></td>
+      </tr>
+      <tr>
+        <td>Wireless Headphones ANC</td>
+        <td>Electronics</td>
+        <td>27</td>
+        <td>$299.00</td>
+        <td>In Stock</td>
+        <td><a href="product-page.html"><button type="button">Details</button></a></td>
+      </tr>
+      <tr>
+        <td>Standing Desk</td>
+        <td>Furniture</td>
+        <td>8</td>
+        <td>$1099.00</td>
+        <td>In Stock</td>
+        <td><a href="product-page.html"><button type="button">Details</button></a></td>
+      </tr>
+    </tbody>
+  </table>
+
+</form>
+
+</body>
+</html>

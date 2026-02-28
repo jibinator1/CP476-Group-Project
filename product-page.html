@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Product Detail</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="topBar">
+  <input type="text" id="searchBar" placeholder="Search...">
+  <input type="submit" value="Search">
+  <a href="dashboard.html" id="backLink">Back to Inventory</a>
+</div>
+
+<div id="productBox">
+
+  <div id="productLeft">
+    <img src="images.jpg" alt="Product Image" width="200">
+    <br><br>
+    <div id="compareBox">
+      Compare with other brands suppliers
+    </div>
+  </div>
+
+  <div id="productRight">
+    <h3>Product Description</h3>
+    <p>34-inch asus monitor</p>
+
+    <p id="price">$799.00</p>
+
+    <label for="qty">Qty:</label>
+    <input type="number" id="qty" name="qty" value="1" min="1" size="4">
+
+    <br><br>
+    <button type="button" id="cartBtn">Add to Cart</button><br><br>
+    <button type="button" id="buyBtn">Buy Now</button>
+  </div>
+
+</div>
+
+</body>
+</html>
