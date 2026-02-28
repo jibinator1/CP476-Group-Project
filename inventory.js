@@ -295,6 +295,7 @@
       var current = products.find(function (p) { return p.id === state.selectedProductId; });
       if (state.activeScreen === 'detail' && current) renderDetail(current);
       closeModal();
+      renderTable();
     }
   }
 
