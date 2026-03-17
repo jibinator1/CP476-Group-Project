@@ -150,3 +150,44 @@ export async function addUser(userName, userRole) {
   }
   return data;
 }
+
+// --- Supplier price comparison ---
+
+export async function fetchSupplierPrices(productId) {
+  const { data, error } = await supabase
+    .from('supplier_prices')
+    .select('unit_price, updated_at, suppliers(name, contact_email)')
+    .eq('product_id', productId)
+    .order('unit_price', { ascending: true }); // cheapest first
+  if (error) { console.error(error.message); return []; }
+  return data;
+}
+
+export async function upsertSupplierPrice(productId, supplierId, unitPrice) {
+  const { error } = await supabase
+    .from('supplier_prices')
+    .upsert({ product_id: productId, supplier_id: supplierId,
+               unit_price: unitPrice, updated_at: new Date() });
+  if (error) console.error(error.message);
+}
+
+// --- Sales chart ---
+
+export async function fetchSalesHistory(productId) {
+  const { data, error } = await supabase
+    .from('sales_log')
+    .select('quantity_sold, sold_at')
+    .eq('product_id', productId)
+    .order('sold_at', { ascending: true });
+  if (error) { console.error(error.message); return []; }
+  return data;
+}
+
+// Call this whenever a sale/stock reduction happens
+export async function logSale(productId, quantitySold, salePrice) {
+  const { error } = await supabase
+    .from('sales_log')
+    .insert({ product_id: productId, quantity_sold: quantitySold,
+              sale_price: salePrice });
+  if (error) console.error(error.message);
+}

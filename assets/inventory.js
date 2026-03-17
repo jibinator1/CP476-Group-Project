@@ -77,7 +77,7 @@
   }
 
   function formatPrice(n) {
-    return '$' + Number(n).toFixed(2);
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
   }
 
   let $sidebarDashboard, $mainDashboard, $mainDetail, $detailBack, $detailContent;

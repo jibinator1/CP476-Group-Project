@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Product — Inventory Management System</title>
-  <link rel="stylesheet" href="inventory.css">
+  <link rel="stylesheet" href="../assets/inventory.css">
 </head>
 <body>
   <div id="app">
@@ -58,7 +58,7 @@
         if (count < limit) return 'low';
         return 'ok';
       }
-      function formatPrice(n) { return '$' + Number(n).toFixed(2); }
+      function formatPrice(n) { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n); }
 
       var params = new URLSearchParams(window.location.search);
       var id = parseInt(params.get('id'), 10);

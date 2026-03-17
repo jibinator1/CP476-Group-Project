@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Browse Products — Inventory Management System</title>
-  <link rel="stylesheet" href="inventory.css">
+  <link rel="stylesheet" href="../assets/inventory.css">
 </head>
 <body>
   <div id="app">
@@ -85,7 +85,7 @@
         if (count < limit) return 'low';
         return 'ok';
       }
-      function formatPrice(n) { return '$' + Number(n).toFixed(2); }
+      function formatPrice(n) { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n); }
 
       var searchEl = document.getElementById('search');
       var catEl = document.getElementById('category-filter');
@@ -119,13 +119,13 @@
         tbody.innerHTML = list.map(function (p) {
           var st = getStockStatus(p.item_count, p.low_stock_limit);
           var label = st === 'ok' ? 'In Stock' : st === 'low' ? 'Low Stock' : 'Out of Stock';
-          return '<tr>' +
+          return '<tr style="cursor: pointer;" onclick="window.location.href=\'product-page.html?id=' + p.id + '\';">' +
             '<td class="col-id">' + p.id + '</td>' +
             '<td>' + escapeHtml(p.item_name) + '</td>' +
             '<td>' + escapeHtml(getCategoryName(p.category_id)) + '</td>' +
             '<td class="col-price">' + formatPrice(p.price) + '</td>' +
             '<td class="col-status"><span class="stock-badge stock-badge--' + st + '">' + label + '</span></td>' +
-            '<td class="col-actions"><a href="product-page.html?id=' + p.id + '" class="btn btn--primary">View</a></td>' +
+            '<td class="col-actions"><a href="product-page.html?id=' + p.id + '" class="btn btn--primary" onclick="event.stopPropagation();">View</a></td>' +
             '</tr>';
         }).join('');
       }

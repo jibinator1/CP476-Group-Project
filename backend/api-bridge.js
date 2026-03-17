@@ -2,7 +2,7 @@
  * Load Supabase backend and expose INVENTORY_API for the inventory app.
  * Run this as type="module" before the main app script. Optional: load supabaseConfig.js before this.
  */
-import * as svc from './backend/inventoryService.js';
+import * as svc from './inventoryService.js';
 
 window.INVENTORY_API = {
   loadProducts: () => svc.fetchInventory(),
