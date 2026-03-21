@@ -382,6 +382,67 @@
     });
   }
 
+  //  PDF Export - generates a price comparison report with mock supplier data
+  async function generatePriceComparisonPDF() {
+    try {
+      var MOCK_SUPPLIERS = ['SupplierOne', 'SupplierTwo', 'SupplierThree'];
+      var enriched = products.map(function (product) {
+        var suppliers = MOCK_SUPPLIERS.map(function (name) {
+          var offset = (Math.random() * 0.3 - 0.1);
+          return { name: name, unit_price: parseFloat((product.price * (1 + offset)).toFixed(2)) };
+        });
+        return { id: product.id, item_name: product.item_name, our_price: product.price, suppliers: suppliers };
+      });
+
+      if (window.INVENTORY_API && typeof window.INVENTORY_API.fetchSupplierPrices === 'function') {
+        enriched = await Promise.all(products.map(async function (product) {
+          var rows = await window.INVENTORY_API.fetchSupplierPrices(product.id);
+          return {
+            id: product.id,
+            item_name: product.item_name,
+            our_price: product.price,
+            suppliers: (rows || []).map(function (r) {
+              return { name: r.suppliers ? r.suppliers.name : 'Unknown', unit_price: r.unit_price };
+            })
+          };
+        }));
+      }
+
+      var supplierNames = [];
+      enriched.forEach(function (p) {
+        p.suppliers.forEach(function (s) {
+          if (supplierNames.indexOf(s.name) === -1) supplierNames.push(s.name);
+        });
+      });
+
+      var headers = ['Product', 'Our Price'].concat(supplierNames).concat(['Best Supplier', 'Savings']);
+
+      var rows = enriched.map(function (product) {
+        var supplierMap = {};
+        product.suppliers.forEach(function (s) { supplierMap[s.name] = s.unit_price; });
+        var prices = product.suppliers.map(function (s) { return s.unit_price; });
+        var bestPrice = prices.length ? Math.min.apply(null, prices) : null;
+        var bestSupplier = product.suppliers.find(function (s) { return s.unit_price === bestPrice; });
+        var savings = bestPrice !== null ? product.our_price - bestPrice : 0;
+        var savingsStr = savings > 0 ? '+$' + savings.toFixed(2) : savings < 0 ? '-$' + Math.abs(savings).toFixed(2) : '$0.00';
+        var row = [product.item_name, '$' + product.our_price.toFixed(2)];
+        supplierNames.forEach(function (n) {
+          row.push(supplierMap[n] !== undefined ? '$' + supplierMap[n].toFixed(2) : 'N/A');
+        });
+        row.push(bestSupplier ? bestSupplier.name : 'N/A', savingsStr);
+        return row;
+      });
+
+      var doc = new window.jspdf.jsPDF({ orientation: 'landscape' });
+      doc.text('Price Comparison Report', 14, 14);
+      doc.autoTable({ head: [headers], body: rows, startY: 20 });
+      doc.save('price-comparison-' + new Date().toISOString().slice(0, 10) + '.pdf');
+    } catch (err) {
+      console.error('PDF generation failed:', err);
+      alert('PDF generation failed. See console for details.');
+    }
+  }
+
   function init() {
     $sidebarDashboard = getEl('nav-dashboard');
     $mainDashboard = getEl('view-dashboard');
@@ -435,6 +496,7 @@
 
     $detailBack.onclick = closeDetail;
     $btnAdd.onclick = openAddModal;
+    getEl('btn-export-pdf').onclick = generatePriceComparisonPDF;
     $search.oninput = function () { state.search = $search.value; renderTable(); };
     $categoryFilter.onchange = function () { state.categoryFilter = $categoryFilter.value; renderTable(); };
     $statusFilter.onchange = function () { state.statusFilter = $statusFilter.value; renderTable(); };

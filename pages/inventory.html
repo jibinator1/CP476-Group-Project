@@ -7,6 +7,9 @@
   <link rel="stylesheet" href="../assets/inventory.css">
   <!-- Optional: add supabaseConfig.js (copy from backend/supabaseConfig.example.js) to use Supabase backend -->
   <script type="module" src="../backend/api-bridge.js"></script>
+  <!-- jsPDF + autoTable for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
   <div id="app">
@@ -25,7 +28,10 @@
       <div id="view-dashboard" class="view active">
         <header class="main__header">
           <h1 class="main__title">Inventory Dashboard</h1>
-          <button type="button" id="btn-add" class="btn btn--primary">Add Product</button>
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+            <button type="button" id="btn-export-pdf" class="btn btn--ghost">Price Comparison PDF</button>
+            <button type="button" id="btn-add" class="btn btn--primary">Add Product</button>
+          </div>
         </header>
 
         <div class="stat-cards">
