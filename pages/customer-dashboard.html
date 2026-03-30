@@ -81,8 +81,8 @@
         return c ? c.category_name : 'Uncategorized';
       }
       function getStockStatus(count, limit) {
-        if (count === 0) return 'out';
-        if (count < limit) return 'low';
+        if (count === 0) { return 'out'; }
+        if (count < limit) { return 'low'; }
         return 'ok';
       }
       function formatPrice(n) { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n); }
@@ -94,8 +94,7 @@
 
       CATEGORIES.forEach(function (c) {
         var opt = document.createElement('option');
-        opt.value = c.id;
-        opt.textContent = c.category_name;
+        opt.value = c.id; opt.textContent = c.category_name;
         catEl.appendChild(opt);
       });
 
@@ -119,29 +118,21 @@
         tbody.innerHTML = list.map(function (p) {
           var st = getStockStatus(p.item_count, p.low_stock_limit);
           var label = st === 'ok' ? 'In Stock' : st === 'low' ? 'Low Stock' : 'Out of Stock';
-          return '<tr style="cursor: pointer;" onclick="window.location.href=\'product-page.html?id=' + p.id + '\';">' +
-            '<td class="col-id">' + p.id + '</td>' +
-            '<td>' + escapeHtml(p.item_name) + '</td>' +
-            '<td>' + escapeHtml(getCategoryName(p.category_id)) + '</td>' +
-            '<td class="col-price">' + formatPrice(p.price) + '</td>' +
-            '<td class="col-status"><span class="stock-badge stock-badge--' + st + '">' + label + '</span></td>' +
-            '<td class="col-actions"><a href="product-page.html?id=' + p.id + '" class="btn btn--primary" onclick="event.stopPropagation();">View</a></td>' +
-            '</tr>';
+          return '<tr style="cursor: pointer;" onclick="window.location.href=\'product-page.html?id=' + p.id + '\';">' + '<td class="col-id">' + p.id + '</td>' + '<td>' + escapeHtml(p.item_name) + '</td>' + '<td>' + escapeHtml(getCategoryName(p.category_id)) + '</td>' + '<td class="col-price">' + formatPrice(p.price) + '</td>' + '<td class="col-status"><span class="stock-badge stock-badge--' + st + '">' + label + '</span></td>' + '<td class="col-actions"><a href="product-page.html?id=' + p.id + '" class="btn btn--primary" onclick="event.stopPropagation();">View</a></td>' + '</tr>';
         }).join('');
       }
 
       function escapeHtml(s) {
-        if (!s) return '';
+        if (!s) { return ''; }
         var d = document.createElement('div');
         d.textContent = s;
         return d.innerHTML;
       }
 
-      searchEl.oninput = render;
-      catEl.onchange = render;
-      statusEl.onchange = render;
+      searchEl.oninput = render; catEl.onchange = render; statusEl.onchange = render;
       render();
     })();
   </script>
+
 </body>
 </html>

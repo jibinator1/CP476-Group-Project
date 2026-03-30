@@ -32,13 +32,13 @@
   let nextId = 11;
 
   // ----- State -----
-  const state = {
-    activeScreen: 'dashboard',
-    selectedProductId: null,
-    modal: null,
-    search: '',
-    categoryFilter: '',
-    statusFilter: ''
+  const state = { 
+    activeScreen: 'dashboard', 
+    selectedProductId: null, 
+    modal: null, 
+    search: '', 
+    categoryFilter: '', 
+    statusFilter: '' 
   };
 
   function getCategoryName(categoryId) {
@@ -47,8 +47,12 @@
   }
 
   function getStockStatus(itemCount, lowStockLimit) {
-    if (itemCount === 0) return 'out';
-    if (itemCount < lowStockLimit) return 'low';
+    if (itemCount === 0) {
+      return 'out';
+    }
+    if (itemCount < lowStockLimit) {
+      return 'low';
+    }
     return 'ok';
   }
 
@@ -69,9 +73,13 @@
     let inStock = 0, lowStock = 0, outOfStock = 0;
     products.forEach(function (p) {
       const st = getStockStatus(p.item_count, p.low_stock_limit);
-      if (st === 'ok') inStock++;
-      else if (st === 'low') lowStock++;
-      else outOfStock++;
+      if (st === 'ok') {
+        inStock++;
+      } else if (st === 'low') {
+        lowStock++;
+      } else {
+        outOfStock++;
+      }
     });
     return { inStock, lowStock, outOfStock, total: products.length };
   }
@@ -88,7 +96,9 @@
   let $formItemName, $formItemDesc, $formPrice, $formItemCount, $formLowStockLimit, $formCategoryId;
   let $confirmMessage, $confirmCancel, $confirmOk;
 
-  function getEl(id) { return document.getElementById(id); }
+  function getEl(id) {
+    return document.getElementById(id);
+  }
 
   function renderStockBadge(itemCount, lowStockLimit) {
     var st = getStockStatus(itemCount, lowStockLimit);
@@ -114,7 +124,9 @@
   }
 
   function renderDetail(product) {
-    if (!product) return;
+    if (!product) {
+      return;
+    }
     var st = getStockStatus(product.item_count, product.low_stock_limit);
     var value = product.price * product.item_count;
     var maxQty = Math.max(product.item_count, product.low_stock_limit, 1);
@@ -131,11 +143,16 @@
     $detailProgressFill.style.width = pct + '%';
     $detailProgressFill.className = 'detail__progress-fill detail__progress-fill--' + st;
 
-    $detailActions.innerHTML =
-      '<button type="button" class="btn btn--primary" data-action="edit">Edit Product</button>' +
+    $detailActions.innerHTML = 
+      '<button type="button" class="btn btn--primary" data-action="edit">Edit Product</button>' + 
       '<button type="button" class="btn btn--danger" data-action="delete">Delete</button>';
-    $detailActions.querySelector('[data-action="edit"]').onclick = function () { openEditModal(product); };
-    $detailActions.querySelector('[data-action="delete"]').onclick = function () { openDeleteModal(product); };
+      
+    $detailActions.querySelector('[data-action="edit"]').onclick = function () {
+      openEditModal(product);
+    };
+    $detailActions.querySelector('[data-action="delete"]').onclick = function () {
+      openDeleteModal(product);
+    };
   }
 
   function renderTable() {
@@ -146,36 +163,52 @@
     }
     $tableBody.innerHTML = filtered.map(function (p) {
       var badge = renderStockBadge(p.item_count, p.low_stock_limit);
-      return '<tr data-id="' + p.id + '">' +
-        '<td class="col-id">' + p.id + '</td>' +
-        '<td>' + escapeHtml(p.item_name) + '</td>' +
-        '<td>' + escapeHtml(getCategoryName(p.category_id)) + '</td>' +
-        '<td class="col-qty">' + p.item_count + '</td>' +
-        '<td class="col-price">' + formatPrice(p.price) + '</td>' +
-        '<td class="col-status">' + badge + '</td>' +
-        '<td class="col-actions actions-cell">' +
-        '<button type="button" class="btn btn--ghost" data-action="view" title="View">View</button>' +
-        '<button type="button" class="btn btn--ghost" data-action="edit" title="Edit">Edit</button>' +
-        '<button type="button" class="btn btn--danger" data-action="delete" title="Delete">Delete</button>' +
-        '</td></tr>';
+      return '<tr data-id="' + p.id + '">' + 
+        '<td class="col-id">' + p.id + '</td>' + 
+        '<td>' + escapeHtml(p.item_name) + '</td>' + 
+        '<td>' + escapeHtml(getCategoryName(p.category_id)) + '</td>' + 
+        '<td class="col-qty">' + p.item_count + '</td>' + 
+        '<td class="col-price">' + formatPrice(p.price) + '</td>' + 
+        '<td class="col-status">' + badge + '</td>' + 
+        '<td class="col-actions actions-cell">' + 
+          '<button type="button" class="btn btn--ghost" data-action="view" title="View">View</button>' + 
+          '<button type="button" class="btn btn--ghost" data-action="edit" title="Edit">Edit</button>' + 
+          '<button type="button" class="btn btn--danger" data-action="delete" title="Delete">Delete</button>' + 
+        '</td>' +
+      '</tr>';
     }).join('');
 
     $tableBody.querySelectorAll('tr[data-id]').forEach(function (row) {
       var id = parseInt(row.getAttribute('data-id'), 10);
       var product = products.find(function (p) { return p.id === id; });
-      if (!product) return;
+      if (!product) {
+        return;
+      }
       row.addEventListener('click', function (e) {
-        if (e.target.closest('.actions-cell')) return;
+        if (e.target.closest('.actions-cell')) {
+          return;
+        }
         openDetail(product);
       });
-      row.querySelector('[data-action="view"]').onclick = function (e) { e.stopPropagation(); openDetail(product); };
-      row.querySelector('[data-action="edit"]').onclick = function (e) { e.stopPropagation(); openEditModal(product); };
-      row.querySelector('[data-action="delete"]').onclick = function (e) { e.stopPropagation(); openDeleteModal(product); };
+      row.querySelector('[data-action="view"]').onclick = function (e) {
+        e.stopPropagation();
+        openDetail(product);
+      };
+      row.querySelector('[data-action="edit"]').onclick = function (e) {
+        e.stopPropagation();
+        openEditModal(product);
+      };
+      row.querySelector('[data-action="delete"]').onclick = function (e) {
+        e.stopPropagation();
+        openDeleteModal(product);
+      };
     });
   }
 
   function escapeHtml(s) {
-    if (!s) return '';
+    if (!s) {
+      return '';
+    }
     var div = document.createElement('div');
     div.textContent = s;
     return div.innerHTML;
@@ -198,13 +231,16 @@
     $formItemCount.value = '0';
     $formLowStockLimit.value = '5';
     $formCategoryId.value = '';
+    
     $modalBody.querySelector('.form-fields').style.display = 'block';
     $modalBody.querySelector('.confirm-content').style.display = 'none';
     $modalFooter.style.display = 'flex';
+    
     getEl('form-save').style.display = '';
     getEl('form-cancel').style.display = '';
     getEl('confirm-cancel').style.display = 'none';
     getEl('confirm-ok').style.display = 'none';
+    
     $modalOverlay.classList.add('active');
   }
 
@@ -212,19 +248,23 @@
     state.modal = 'edit';
     state.selectedProductId = product.id;
     $modalTitle.textContent = 'Edit Product';
+    
     $formItemName.value = product.item_name;
     $formItemDesc.value = product.item_description || '';
     $formPrice.value = product.price;
     $formItemCount.value = product.item_count;
     $formLowStockLimit.value = product.low_stock_limit;
     $formCategoryId.value = product.category_id || '';
+    
     $modalBody.querySelector('.form-fields').style.display = 'block';
     $modalBody.querySelector('.confirm-content').style.display = 'none';
     $modalFooter.style.display = 'flex';
+    
     getEl('form-save').style.display = '';
     getEl('form-cancel').style.display = '';
     getEl('confirm-cancel').style.display = 'none';
     getEl('confirm-ok').style.display = 'none';
+    
     $modalOverlay.classList.add('active');
   }
 
@@ -232,14 +272,17 @@
     state.modal = 'delete';
     state.selectedProductId = product.id;
     $modalTitle.textContent = 'Delete Product';
+    
     $modalBody.querySelector('.form-fields').style.display = 'none';
     $modalBody.querySelector('.confirm-content').style.display = 'block';
     $confirmMessage.innerHTML = 'Are you sure you want to delete <strong>' + escapeHtml(product.item_name) + '</strong>? This cannot be undone.';
+    
     $modalFooter.style.display = 'flex';
     getEl('form-save').style.display = 'none';
     getEl('form-cancel').style.display = 'none';
     getEl('confirm-cancel').style.display = '';
     getEl('confirm-ok').style.display = '';
+    
     $modalOverlay.classList.add('active');
   }
 
@@ -258,20 +301,22 @@
     var price = parseFloat($formPrice.value, 10);
     var itemCount = parseInt($formItemCount.value, 10);
     var lowStockLimit = parseInt($formLowStockLimit.value, 10);
-    if (isNaN(price)) price = 0;
-    if (isNaN(itemCount)) itemCount = 0;
-    if (isNaN(lowStockLimit)) lowStockLimit = 5;
+    
+    if (isNaN(price)) { price = 0; }
+    if (isNaN(itemCount)) { itemCount = 0; }
+    if (isNaN(lowStockLimit)) { lowStockLimit = 5; }
+    
     var categoryId = $formCategoryId.value ? parseInt($formCategoryId.value, 10) : null;
 
     if (state.modal === 'add') {
-      var newProduct = {
-        id: nextId++,
-        item_name: name,
-        item_description: $formItemDesc.value.trim() || null,
-        price: price,
-        item_count: itemCount,
-        low_stock_limit: lowStockLimit,
-        category_id: categoryId
+      var newProduct = { 
+        id: nextId++, 
+        item_name: name, 
+        item_description: $formItemDesc.value.trim() || null, 
+        price: price, 
+        item_count: itemCount, 
+        low_stock_limit: lowStockLimit, 
+        category_id: categoryId 
       };
       products = [newProduct].concat(products);
       renderTable();
@@ -280,20 +325,25 @@
       openDetail(newProduct);
     } else if (state.modal === 'edit') {
       var idx = products.findIndex(function (p) { return p.id === state.selectedProductId; });
-      if (idx === -1) { closeModal(); return; }
-      products[idx] = {
-        id: products[idx].id,
-        item_name: name,
-        item_description: $formItemDesc.value.trim() || null,
-        price: price,
-        item_count: itemCount,
-        low_stock_limit: lowStockLimit,
-        category_id: categoryId
+      if (idx === -1) {
+        closeModal();
+        return;
+      }
+      products[idx] = { 
+        id: products[idx].id, 
+        item_name: name, 
+        item_description: $formItemDesc.value.trim() || null, 
+        price: price, 
+        item_count: itemCount, 
+        low_stock_limit: lowStockLimit, 
+        category_id: categoryId 
       };
       renderTable();
       renderStats();
       var current = products.find(function (p) { return p.id === state.selectedProductId; });
-      if (state.activeScreen === 'detail' && current) renderDetail(current);
+      if (state.activeScreen === 'detail' && current) {
+        renderDetail(current);
+      }
       closeModal();
       renderTable();
     }
@@ -304,24 +354,34 @@
     products = products.filter(function (p) { return p.id !== id; });
     renderTable();
     renderStats();
-    if (state.activeScreen === 'detail') closeDetail();
+    if (state.activeScreen === 'detail') {
+      closeDetail();
+    }
     closeModal();
   }
 
   function refreshFromApi(cb) {
-    if (!window.INVENTORY_API) { if (cb) cb(); return; }
-    Promise.all([window.INVENTORY_API.loadProducts(), window.INVENTORY_API.loadCategories()]).then(function (res) {
-      var prods = res[0], cats = res[1];
-      if (prods && Array.isArray(prods)) products = prods;
-      if (cats && Array.isArray(cats)) {
-        CATEGORIES.length = 0;
-        CATEGORIES.push.apply(CATEGORIES, cats);
-      }
-      nextId = products.length ? Math.max.apply(null, products.map(function (p) { return p.id; })) + 1 : 1;
-      renderTable();
-      renderStats();
-      if (cb) cb();
-    }).catch(function (err) { console.error(err); if (cb) cb(); });
+    if (!window.INVENTORY_API) {
+      if (cb) { cb(); }
+      return;
+    }
+    Promise.all([window.INVENTORY_API.loadProducts(), window.INVENTORY_API.loadCategories()])
+      .then(function (res) {
+        var prods = res[0], cats = res[1];
+        if (prods && Array.isArray(prods)) { products = prods; }
+        if (cats && Array.isArray(cats)) {
+          CATEGORIES.length = 0;
+          CATEGORIES.push.apply(CATEGORIES, cats);
+        }
+        nextId = products.length ? Math.max.apply(null, products.map(function (p) { return p.id; })) + 1 : 1;
+        renderTable();
+        renderStats();
+        if (cb) { cb(); }
+      })
+      .catch(function (err) {
+        console.error(err);
+        if (cb) { cb(); }
+      });
   }
 
   function saveProductAsync() {
@@ -330,23 +390,30 @@
     var price = parseFloat($formPrice.value, 10);
     var itemCount = parseInt($formItemCount.value, 10);
     var lowStockLimit = parseInt($formLowStockLimit.value, 10);
-    if (isNaN(price)) price = 0;
-    if (isNaN(itemCount)) itemCount = 0;
-    if (isNaN(lowStockLimit)) lowStockLimit = 5;
+    
+    if (isNaN(price)) { price = 0; }
+    if (isNaN(itemCount)) { itemCount = 0; }
+    if (isNaN(lowStockLimit)) { lowStockLimit = 5; }
+    
     var categoryId = $formCategoryId.value ? parseInt($formCategoryId.value, 10) : null;
-    var payload = {
-      item_name: name,
-      item_description: $formItemDesc.value.trim() || null,
-      price: price,
-      item_count: itemCount,
-      low_stock_limit: lowStockLimit,
-      category_id: categoryId
+    var payload = { 
+      item_name: name, 
+      item_description: $formItemDesc.value.trim() || null, 
+      price: price, 
+      item_count: itemCount, 
+      low_stock_limit: lowStockLimit, 
+      category_id: categoryId 
     };
+    
     if (state.modal === 'add') {
       window.INVENTORY_API.addProduct(payload).then(function (added) {
         if (added) {
           closeModal();
-          refreshFromApi(function () { if (added.id) openDetail(products.find(function (p) { return p.id === added.id; }) || added); });
+          refreshFromApi(function () {
+            if (added.id) {
+              openDetail(products.find(function (p) { return p.id === added.id; }) || added);
+            }
+          });
         }
       });
     } else if (state.modal === 'edit') {
@@ -354,7 +421,9 @@
         if (updated) {
           closeModal();
           refreshFromApi(function () {
-            if (state.activeScreen === 'detail' && state.selectedProductId === updated.id) renderDetail(updated);
+            if (state.activeScreen === 'detail' && state.selectedProductId === updated.id) {
+              renderDetail(updated);
+            }
           });
         }
       });
@@ -365,7 +434,9 @@
     var id = state.selectedProductId;
     window.INVENTORY_API.deleteProduct(id).then(function (ok) {
       if (ok) {
-        if (state.activeScreen === 'detail') closeDetail();
+        if (state.activeScreen === 'detail') {
+          closeDetail();
+        }
         closeModal();
         state.selectedProductId = null;
         refreshFromApi();
@@ -382,7 +453,6 @@
     });
   }
 
-  //  PDF Export - generates a price comparison report with mock supplier data
   async function generatePriceComparisonPDF() {
     try {
       var MOCK_SUPPLIERS = ['SupplierOne', 'SupplierTwo', 'SupplierThree'];
@@ -402,7 +472,7 @@
             item_name: product.item_name,
             our_price: product.price,
             suppliers: (rows || []).map(function (r) {
-              return { name: r.suppliers ? r.suppliers.name : 'Unknown', unit_price: r.unit_price };
+              return { name: r.name, unit_price: r.unit_price };
             })
           };
         }));
@@ -411,12 +481,13 @@
       var supplierNames = [];
       enriched.forEach(function (p) {
         p.suppliers.forEach(function (s) {
-          if (supplierNames.indexOf(s.name) === -1) supplierNames.push(s.name);
+          if (supplierNames.indexOf(s.name) === -1) {
+            supplierNames.push(s.name);
+          }
         });
       });
 
       var headers = ['Product', 'Our Price'].concat(supplierNames).concat(['Best Supplier', 'Savings']);
-
       var rows = enriched.map(function (product) {
         var supplierMap = {};
         product.suppliers.forEach(function (s) { supplierMap[s.name] = s.unit_price; });
@@ -444,42 +515,14 @@
   }
 
   function init() {
-    $sidebarDashboard = getEl('nav-dashboard');
-    $mainDashboard = getEl('view-dashboard');
-    $mainDetail = getEl('view-detail');
-    $detailBack = getEl('detail-back');
-    $detailContent = getEl('detail-content');
-    $statIn = getEl('stat-in');
-    $statLow = getEl('stat-low');
-    $statOut = getEl('stat-out');
-    $statTotal = getEl('stat-total');
-    $search = getEl('search');
-    $categoryFilter = getEl('category-filter');
-    $statusFilter = getEl('status-filter');
-    $btnAdd = getEl('btn-add');
-    $tableBody = getEl('table-body');
-    $detailTitle = getEl('detail-title');
-    $detailMeta = getEl('detail-meta');
-    $detailDesc = getEl('detail-desc');
-    $detailQty = getEl('detail-qty');
-    $detailValue = getEl('detail-value');
-    $detailProgressWrap = getEl('detail-progress-wrap');
-    $detailProgressFill = getEl('detail-progress-fill');
-    $detailActions = getEl('detail-actions');
-    $modalOverlay = getEl('modal-overlay');
-    $modal = getEl('modal');
-    $modalTitle = getEl('modal-title');
-    $modalBody = getEl('modal-body');
-    $modalFooter = getEl('modal-footer');
-    $formItemName = getEl('form-item-name');
-    $formItemDesc = getEl('form-item-desc');
-    $formPrice = getEl('form-price');
-    $formItemCount = getEl('form-item-count');
-    $formLowStockLimit = getEl('form-low-stock-limit');
-    $formCategoryId = getEl('form-category-id');
-    $confirmMessage = getEl('confirm-message');
-    $confirmCancel = getEl('confirm-cancel');
-    $confirmOk = getEl('confirm-ok');
+    $sidebarDashboard = getEl('nav-dashboard'); $mainDashboard = getEl('view-dashboard'); $mainDetail = getEl('view-detail'); $detailBack = getEl('detail-back'); $detailContent = getEl('detail-content');
+    $statIn = getEl('stat-in'); $statLow = getEl('stat-low'); $statOut = getEl('stat-out'); $statTotal = getEl('stat-total');
+    $search = getEl('search'); $categoryFilter = getEl('category-filter'); $statusFilter = getEl('status-filter'); $btnAdd = getEl('btn-add');
+    $tableBody = getEl('table-body'); $detailTitle = getEl('detail-title'); $detailMeta = getEl('detail-meta'); $detailDesc = getEl('detail-desc'); $detailQty = getEl('detail-qty'); $detailValue = getEl('detail-value');
+    $detailProgressWrap = getEl('detail-progress-wrap'); $detailProgressFill = getEl('detail-progress-fill'); $detailActions = getEl('detail-actions');
+    $modalOverlay = getEl('modal-overlay'); $modal = getEl('modal'); $modalTitle = getEl('modal-title'); $modalBody = getEl('modal-body'); $modalFooter = getEl('modal-footer');
+    $formItemName = getEl('form-item-name'); $formItemDesc = getEl('form-item-desc'); $formPrice = getEl('form-price'); $formItemCount = getEl('form-item-count'); $formLowStockLimit = getEl('form-low-stock-limit'); $formCategoryId = getEl('form-category-id');
+    $confirmMessage = getEl('confirm-message'); $confirmCancel = getEl('confirm-cancel'); $confirmOk = getEl('confirm-ok');
 
     populateCategorySelect($categoryFilter);
     var formCat = getEl('form-category-id');
@@ -487,7 +530,8 @@
     optBlank.value = '';
     optBlank.textContent = '— Select category —';
     formCat.appendChild(optBlank);
-    CATEGORIES.forEach(function (c) {
+    
+    CATEGORIES.forEach(function (c) { 
       var opt = document.createElement('option');
       opt.value = c.id;
       opt.textContent = c.category_name;
@@ -502,17 +546,27 @@
     $statusFilter.onchange = function () { state.statusFilter = $statusFilter.value; renderTable(); };
 
     getEl('form-save').onclick = function () {
-      if (window.INVENTORY_API) saveProductAsync();
-      else saveProduct();
+      if (window.INVENTORY_API) {
+        saveProductAsync();
+      } else {
+        saveProduct();
+      }
     };
     getEl('form-cancel').onclick = closeModal;
     $confirmCancel.onclick = closeModal;
     $confirmOk.onclick = function () {
-      if (window.INVENTORY_API) confirmDeleteAsync();
-      else confirmDelete();
+      if (window.INVENTORY_API) {
+        confirmDeleteAsync();
+      } else {
+        confirmDelete();
+      }
     };
     getEl('modal-close').onclick = closeModal;
-    $modalOverlay.onclick = function (e) { if (e.target === $modalOverlay) closeModal(); };
+    $modalOverlay.onclick = function (e) {
+      if (e.target === $modalOverlay) {
+        closeModal();
+      }
+    };
 
     renderStats();
     renderTable();
@@ -528,19 +582,21 @@
 
   function onReady() {
     if (window.INVENTORY_API) {
-      Promise.all([window.INVENTORY_API.loadProducts(), window.INVENTORY_API.loadCategories()]).then(function (res) {
-        var prods = res[0], cats = res[1];
-        if (prods && Array.isArray(prods)) products = prods;
-        if (cats && Array.isArray(cats)) {
-          CATEGORIES.length = 0;
-          CATEGORIES.push.apply(CATEGORIES, cats);
-        }
-        nextId = products.length ? Math.max.apply(null, products.map(function (p) { return p.id; })) + 1 : 1;
-        init();
-      }).catch(function (err) {
-        console.error('Failed to load from API, using mock data:', err);
-        init();
-      });
+      Promise.all([window.INVENTORY_API.loadProducts(), window.INVENTORY_API.loadCategories()])
+        .then(function (res) {
+          var prods = res[0], cats = res[1];
+          if (prods && Array.isArray(prods)) { products = prods; }
+          if (cats && Array.isArray(cats)) {
+            CATEGORIES.length = 0;
+            CATEGORIES.push.apply(CATEGORIES, cats);
+          }
+          nextId = products.length ? Math.max.apply(null, products.map(function (p) { return p.id; })) + 1 : 1;
+          init();
+        })
+        .catch(function (err) {
+          console.error('Failed to load from API, using mock data:', err);
+          init();
+        });
     } else {
       init();
     }
