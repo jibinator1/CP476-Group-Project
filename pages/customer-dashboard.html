@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Browse Products — Inventory Management System</title>
   <link rel="stylesheet" href="../assets/inventory.css">
+  <script type="module" src="../backend/api-bridge.js"></script>
 </head>
 <body>
   <div id="app">
@@ -55,26 +56,9 @@
   </div>
 
   <script>
-    (function () {
-      var CATEGORIES = [
-        { id: 1, category_name: 'Electronics' },
-        { id: 2, category_name: 'Furniture' },
-        { id: 3, category_name: 'Accessories' },
-        { id: 4, category_name: 'Stationery' },
-        { id: 5, category_name: 'Consumables' }
-      ];
-      var products = [
-        { id: 1, item_name: 'Monitor 34"', item_description: '34-inch ultrawide display, 144Hz', price: 799.00, item_count: 12, low_stock_limit: 5, category_id: 1 },
-        { id: 2, item_name: 'Mechanical Keyboard', item_description: 'RGB, Cherry MX Brown', price: 149.99, item_count: 3, low_stock_limit: 5, category_id: 3 },
-        { id: 3, item_name: 'Ergonomic Desk Chair', item_description: 'Adjustable lumbar, mesh back', price: 549.00, item_count: 0, low_stock_limit: 3, category_id: 2 },
-        { id: 4, item_name: 'Wireless Headphones ANC', item_description: 'Active noise cancelling, 30h battery', price: 299.00, item_count: 27, low_stock_limit: 10, category_id: 1 },
-        { id: 5, item_name: 'Standing Desk', item_description: 'Electric height adjustable', price: 1099.00, item_count: 8, low_stock_limit: 4, category_id: 2 },
-        { id: 6, item_name: 'USB-C Hub', item_description: '7-in-1 with HDMI and SD', price: 49.99, item_count: 4, low_stock_limit: 8, category_id: 3 },
-        { id: 7, item_name: 'Desk Lamp LED', item_description: 'Dimmable, USB charging', price: 39.00, item_count: 0, low_stock_limit: 5, category_id: 2 },
-        { id: 8, item_name: 'Notebook Set (5pk)', item_description: 'A5 ruled, 200 pages', price: 12.99, item_count: 45, low_stock_limit: 20, category_id: 4 },
-        { id: 9, item_name: 'Whiteboard Markers (8)', item_description: 'Chisel tip, assorted', price: 14.50, item_count: 6, low_stock_limit: 10, category_id: 4 },
-        { id: 10, item_name: 'Stapler Heavy Duty', item_description: 'Metal base, 100 sheet capacity', price: 24.00, item_count: 2, low_stock_limit: 5, category_id: 4 }
-      ];
+    document.addEventListener('DOMContentLoaded', function () {
+      var CATEGORIES = [];
+      var products = [];
 
       function getCategoryName(cid) {
         var c = CATEGORIES.find(function (x) { return x.id === cid; });
@@ -92,11 +76,12 @@
       var statusEl = document.getElementById('status-filter');
       var tbody = document.getElementById('table-body');
 
-      CATEGORIES.forEach(function (c) {
-        var opt = document.createElement('option');
-        opt.value = c.id; opt.textContent = c.category_name;
-        catEl.appendChild(opt);
-      });
+      function escapeHtml(s) {
+        if (!s) { return ''; }
+        var d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+      }
 
       function render() {
         var search = searchEl.value.trim().toLowerCase();
@@ -122,17 +107,29 @@
         }).join('');
       }
 
-      function escapeHtml(s) {
-        if (!s) { return ''; }
-        var d = document.createElement('div');
-        d.textContent = s;
-        return d.innerHTML;
-      }
-
       searchEl.oninput = render; catEl.onchange = render; statusEl.onchange = render;
-      render();
-    })();
-  </script>
 
+      // Fetch from API
+      function initData() {
+        if (!window.INVENTORY_API) {
+          setTimeout(initData, 50);
+          return;
+        }
+        Promise.all([window.INVENTORY_API.loadProducts(), window.INVENTORY_API.loadCategories()])
+          .then(function (res) {
+            products = res[0] || [];
+            CATEGORIES = res[1] || [];
+            
+            CATEGORIES.forEach(function (c) {
+              var opt = document.createElement('option');
+              opt.value = c.id; opt.textContent = c.category_name;
+              catEl.appendChild(opt);
+            });
+            render();
+          });
+      }
+      initData();
+    });
+  </script>
 </body>
 </html>

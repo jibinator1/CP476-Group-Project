@@ -1,37 +1,14 @@
 /**
- * Inventory Management System — Front-end (mock data)
- * Field names match DB columns for easy API swap in Milestone 03.
+ * Inventory Management System — Front-end 
  */
 
 (function () {
   'use strict';
 
-  // ----- Categories (matches categories table) -----
-  const CATEGORIES = [
-    { id: 1, category_name: 'Electronics', description: 'Devices and gadgets' },
-    { id: 2, category_name: 'Furniture', description: 'Office and home furniture' },
-    { id: 3, category_name: 'Accessories', description: 'Peripherals and accessories' },
-    { id: 4, category_name: 'Stationery', description: 'Office supplies' },
-    { id: 5, category_name: 'Consumables', description: 'Consumable goods' }
-  ];
-
-  // ----- Mock products (matches products table columns) -----
-  let products = [
-    { id: 1, item_name: 'Monitor 34"', item_description: '34-inch ultrawide display, 144Hz', price: 799.00, item_count: 12, low_stock_limit: 5, category_id: 1 },
-    { id: 2, item_name: 'Mechanical Keyboard', item_description: 'RGB, Cherry MX Brown', price: 149.99, item_count: 3, low_stock_limit: 5, category_id: 3 },
-    { id: 3, item_name: 'Ergonomic Desk Chair', item_description: 'Adjustable lumbar, mesh back', price: 549.00, item_count: 0, low_stock_limit: 3, category_id: 2 },
-    { id: 4, item_name: 'Wireless Headphones ANC', item_description: 'Active noise cancelling, 30h battery', price: 299.00, item_count: 27, low_stock_limit: 10, category_id: 1 },
-    { id: 5, item_name: 'Standing Desk', item_description: 'Electric height adjustable', price: 1099.00, item_count: 8, low_stock_limit: 4, category_id: 2 },
-    { id: 6, item_name: 'USB-C Hub', item_description: '7-in-1 with HDMI and SD', price: 49.99, item_count: 4, low_stock_limit: 8, category_id: 3 },
-    { id: 7, item_name: 'Desk Lamp LED', item_description: 'Dimmable, USB charging', price: 39.00, item_count: 0, low_stock_limit: 5, category_id: 2 },
-    { id: 8, item_name: 'Notebook Set (5pk)', item_description: 'A5 ruled, 200 pages', price: 12.99, item_count: 45, low_stock_limit: 20, category_id: 4 },
-    { id: 9, item_name: 'Whiteboard Markers (8)', item_description: 'Chisel tip, assorted', price: 14.50, item_count: 6, low_stock_limit: 10, category_id: 4 },
-    { id: 10, item_name: 'Stapler Heavy Duty', item_description: 'Metal base, 100 sheet capacity', price: 24.00, item_count: 2, low_stock_limit: 5, category_id: 4 }
-  ];
-
-  let nextId = 11;
-
   // ----- State -----
+  const CATEGORIES = [];
+  let products = [];
+
   const state = { 
     activeScreen: 'dashboard', 
     selectedProductId: null, 
@@ -47,12 +24,8 @@
   }
 
   function getStockStatus(itemCount, lowStockLimit) {
-    if (itemCount === 0) {
-      return 'out';
-    }
-    if (itemCount < lowStockLimit) {
-      return 'low';
-    }
+    if (itemCount === 0) return 'out';
+    if (itemCount < lowStockLimit) return 'low';
     return 'ok';
   }
 
@@ -124,9 +97,7 @@
   }
 
   function renderDetail(product) {
-    if (!product) {
-      return;
-    }
+    if (!product) return;
     var st = getStockStatus(product.item_count, product.low_stock_limit);
     var value = product.price * product.item_count;
     var maxQty = Math.max(product.item_count, product.low_stock_limit, 1);
@@ -181,13 +152,9 @@
     $tableBody.querySelectorAll('tr[data-id]').forEach(function (row) {
       var id = parseInt(row.getAttribute('data-id'), 10);
       var product = products.find(function (p) { return p.id === id; });
-      if (!product) {
-        return;
-      }
+      if (!product) return;
       row.addEventListener('click', function (e) {
-        if (e.target.closest('.actions-cell')) {
-          return;
-        }
+        if (e.target.closest('.actions-cell')) return;
         openDetail(product);
       });
       row.querySelector('[data-action="view"]').onclick = function (e) {
@@ -206,9 +173,7 @@
   }
 
   function escapeHtml(s) {
-    if (!s) {
-      return '';
-    }
+    if (!s) return '';
     var div = document.createElement('div');
     div.textContent = s;
     return div.innerHTML;
@@ -292,79 +257,7 @@
     $modalOverlay.classList.remove('active');
   }
 
-  function saveProduct() {
-    var name = $formItemName.value.trim();
-    if (!name) {
-      $formItemName.focus();
-      return;
-    }
-    var price = parseFloat($formPrice.value, 10);
-    var itemCount = parseInt($formItemCount.value, 10);
-    var lowStockLimit = parseInt($formLowStockLimit.value, 10);
-    
-    if (isNaN(price)) { price = 0; }
-    if (isNaN(itemCount)) { itemCount = 0; }
-    if (isNaN(lowStockLimit)) { lowStockLimit = 5; }
-    
-    var categoryId = $formCategoryId.value ? parseInt($formCategoryId.value, 10) : null;
-
-    if (state.modal === 'add') {
-      var newProduct = { 
-        id: nextId++, 
-        item_name: name, 
-        item_description: $formItemDesc.value.trim() || null, 
-        price: price, 
-        item_count: itemCount, 
-        low_stock_limit: lowStockLimit, 
-        category_id: categoryId 
-      };
-      products = [newProduct].concat(products);
-      renderTable();
-      renderStats();
-      closeModal();
-      openDetail(newProduct);
-    } else if (state.modal === 'edit') {
-      var idx = products.findIndex(function (p) { return p.id === state.selectedProductId; });
-      if (idx === -1) {
-        closeModal();
-        return;
-      }
-      products[idx] = { 
-        id: products[idx].id, 
-        item_name: name, 
-        item_description: $formItemDesc.value.trim() || null, 
-        price: price, 
-        item_count: itemCount, 
-        low_stock_limit: lowStockLimit, 
-        category_id: categoryId 
-      };
-      renderTable();
-      renderStats();
-      var current = products.find(function (p) { return p.id === state.selectedProductId; });
-      if (state.activeScreen === 'detail' && current) {
-        renderDetail(current);
-      }
-      closeModal();
-      renderTable();
-    }
-  }
-
-  function confirmDelete() {
-    var id = state.selectedProductId;
-    products = products.filter(function (p) { return p.id !== id; });
-    renderTable();
-    renderStats();
-    if (state.activeScreen === 'detail') {
-      closeDetail();
-    }
-    closeModal();
-  }
-
   function refreshFromApi(cb) {
-    if (!window.INVENTORY_API) {
-      if (cb) { cb(); }
-      return;
-    }
     Promise.all([window.INVENTORY_API.loadProducts(), window.INVENTORY_API.loadCategories()])
       .then(function (res) {
         var prods = res[0], cats = res[1];
@@ -373,7 +266,6 @@
           CATEGORIES.length = 0;
           CATEGORIES.push.apply(CATEGORIES, cats);
         }
-        nextId = products.length ? Math.max.apply(null, products.map(function (p) { return p.id; })) + 1 : 1;
         renderTable();
         renderStats();
         if (cb) { cb(); }
@@ -384,16 +276,16 @@
       });
   }
 
-  function saveProductAsync() {
+  function saveProduct() {
     var name = $formItemName.value.trim();
     if (!name) { $formItemName.focus(); return; }
     var price = parseFloat($formPrice.value, 10);
     var itemCount = parseInt($formItemCount.value, 10);
     var lowStockLimit = parseInt($formLowStockLimit.value, 10);
     
-    if (isNaN(price)) { price = 0; }
-    if (isNaN(itemCount)) { itemCount = 0; }
-    if (isNaN(lowStockLimit)) { lowStockLimit = 5; }
+    if (isNaN(price)) price = 0;
+    if (isNaN(itemCount)) itemCount = 0;
+    if (isNaN(lowStockLimit)) lowStockLimit = 5;
     
     var categoryId = $formCategoryId.value ? parseInt($formCategoryId.value, 10) : null;
     var payload = { 
@@ -430,7 +322,7 @@
     }
   }
 
-  function confirmDeleteAsync() {
+  function confirmDelete() {
     var id = state.selectedProductId;
     window.INVENTORY_API.deleteProduct(id).then(function (ok) {
       if (ok) {
@@ -455,28 +347,17 @@
 
   async function generatePriceComparisonPDF() {
     try {
-      var MOCK_SUPPLIERS = ['SupplierOne', 'SupplierTwo', 'SupplierThree'];
-      var enriched = products.map(function (product) {
-        var suppliers = MOCK_SUPPLIERS.map(function (name) {
-          var offset = (Math.random() * 0.3 - 0.1);
-          return { name: name, unit_price: parseFloat((product.price * (1 + offset)).toFixed(2)) };
-        });
-        return { id: product.id, item_name: product.item_name, our_price: product.price, suppliers: suppliers };
-      });
-
-      if (window.INVENTORY_API && typeof window.INVENTORY_API.fetchSupplierPrices === 'function') {
-        enriched = await Promise.all(products.map(async function (product) {
-          var rows = await window.INVENTORY_API.fetchSupplierPrices(product.id);
-          return {
-            id: product.id,
-            item_name: product.item_name,
-            our_price: product.price,
-            suppliers: (rows || []).map(function (r) {
-              return { name: r.name, unit_price: r.unit_price };
-            })
-          };
-        }));
-      }
+      var enriched = await Promise.all(products.map(async function (product) {
+        var rows = await window.INVENTORY_API.fetchSupplierPrices(product.id);
+        return {
+          id: product.id,
+          item_name: product.item_name,
+          our_price: product.price,
+          suppliers: (rows || []).map(function (r) {
+            return { name: r.name, unit_price: r.unit_price };
+          })
+        };
+      }));
 
       var supplierNames = [];
       enriched.forEach(function (p) {
@@ -545,27 +426,13 @@
     $categoryFilter.onchange = function () { state.categoryFilter = $categoryFilter.value; renderTable(); };
     $statusFilter.onchange = function () { state.statusFilter = $statusFilter.value; renderTable(); };
 
-    getEl('form-save').onclick = function () {
-      if (window.INVENTORY_API) {
-        saveProductAsync();
-      } else {
-        saveProduct();
-      }
-    };
+    getEl('form-save').onclick = saveProduct;
     getEl('form-cancel').onclick = closeModal;
     $confirmCancel.onclick = closeModal;
-    $confirmOk.onclick = function () {
-      if (window.INVENTORY_API) {
-        confirmDeleteAsync();
-      } else {
-        confirmDelete();
-      }
-    };
+    $confirmOk.onclick = confirmDelete;
     getEl('modal-close').onclick = closeModal;
     $modalOverlay.onclick = function (e) {
-      if (e.target === $modalOverlay) {
-        closeModal();
-      }
+      if (e.target === $modalOverlay) closeModal();
     };
 
     renderStats();
@@ -581,25 +448,20 @@
   }
 
   function onReady() {
-    if (window.INVENTORY_API) {
-      Promise.all([window.INVENTORY_API.loadProducts(), window.INVENTORY_API.loadCategories()])
-        .then(function (res) {
-          var prods = res[0], cats = res[1];
-          if (prods && Array.isArray(prods)) { products = prods; }
-          if (cats && Array.isArray(cats)) {
-            CATEGORIES.length = 0;
-            CATEGORIES.push.apply(CATEGORIES, cats);
-          }
-          nextId = products.length ? Math.max.apply(null, products.map(function (p) { return p.id; })) + 1 : 1;
-          init();
-        })
-        .catch(function (err) {
-          console.error('Failed to load from API, using mock data:', err);
-          init();
-        });
-    } else {
-      init();
-    }
+    Promise.all([window.INVENTORY_API.loadProducts(), window.INVENTORY_API.loadCategories()])
+      .then(function (res) {
+        var prods = res[0], cats = res[1];
+        if (prods && Array.isArray(prods)) { products = prods; }
+        if (cats && Array.isArray(cats)) {
+          CATEGORIES.length = 0;
+          CATEGORIES.push.apply(CATEGORIES, cats);
+        }
+        init();
+      })
+      .catch(function (err) {
+        console.error('Failed to load from API:', err);
+        init();
+      });
   }
 
   runInit();

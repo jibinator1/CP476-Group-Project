@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Welcome - Inventory Management System</title>
   <link rel="stylesheet" href="../assets/inventory.css">
-  <script src="../backend/supabaseConfig.js"></script>
-  <!-- Optional: add supabaseConfig.js (copy from backend/supabaseConfig.example.js) to use Supabase backend -->
   <script type="module" src="../backend/api-bridge.js"></script>
   <style>
     body.login-page {
@@ -148,7 +146,7 @@
   </div>
 
   <script type="module">
-    import { signInUser, signUpUser } from '../backend/inventoryService.js';
+    import { signInUser, signUpUser } from '../backend/api-bridge.js';
 
     const card = document.getElementById('auth-card');
     const goToSignup = document.getElementById('go-to-signup');

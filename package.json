@@ -1,0 +1,21 @@
+{
+  "name": "cp476-group-project",
+  "version": "1.0.0",
+  "description": "The Inventory Management System is designed to help small businesses efficiently track products, manage stock levels, and make informed restocking decisions. The system provides a simple and intuitive interface that supports multiple user roles, including consumers, inventory managers, and shelf stockers.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.101.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1"
+  }
+}

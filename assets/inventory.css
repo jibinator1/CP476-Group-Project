@@ -124,7 +124,6 @@ body {
 
 .sidebar__logout a:hover { color: var(--text-inverse); }
 
-/* ----- Main content ----- */
 .main {
   flex: 1;
   padding: var(--space-xl);
@@ -317,10 +316,12 @@ body {
 /* ----- Stock badge ----- */
 .stock-badge {
   display: inline-block;
-  padding: var(--space-xs) var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
   border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-align: center;
 }
 
 .stock-badge--ok { background: rgba(5, 150, 105, 0.15); color: var(--stock-ok); }
