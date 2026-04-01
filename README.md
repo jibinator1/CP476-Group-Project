@@ -1,65 +1,44 @@
 # Inventory Management System
 
-## Project Overview
-The Inventory Management System is designed to help small businesses efficiently track products, manage stock levels, and make informed restocking decisions. The system provides a simple and intuitive interface that supports multiple user roles, including consumers, inventory managers, and shelf stockers.
+A full-stack, secure inventory management system built with Node.js, Express, and Supabase PostgreSQL. This project is the final submission for Milestone 03.
 
-## Motivation
-Many small businesses rely on manual or inefficient methods to manage inventory, which can lead to stock inaccuracies and lost revenue. This project aims to address these challenges by offering a centralized and organized solution that improves inventory visibility, reduces errors, and supports better business decision-making.
+## 🚀 Setup & Execution (Running Locally)
 
-## Target Users
-- Consumers
-- Small business owners
-- Inventory managers
-- Shelf stockers
+Follow these exact steps to run the application from a completely clean machine setup.
 
-## Core Features (Implemented in Milestone 2)
-- Search inventory and view product availability
-- Add, update, and remove inventory items
-- Track product quantities and stock levels
-- Low-stock alerts for inventory managers
-- Supplier price comparison functionality
+### 1. Prerequisites
+You must have [Node.js](https://nodejs.org/) (which includes `npm`) installed on your computer.
 
-## Tech Stack (Tentative)
-- Frontend: HTML, CSS, JavaScript (vanilla); design tokens and modern UI (see `inventory.html`)
-- Backend / data: **Supabase** (optional). Backend code is in `backend/` (Supabase client + `inventoryService.js`). When configured, the app uses your Supabase project for products and categories.
-- Version Control: GitHub
+### 2. Install Dependencies
+Open your terminal, navigate to the root directory `CP476-Group-Project`, and install the required Node.js libraries by running:
+```bash
+npm install
+```
+*(This will automatically install `express`, `cors`, `dotenv`, and `@supabase/supabase-js` based on the `package.json` file).*
 
-## How to Run Locally
+### 3. Environment/Configuration Notes (`.env`)
+To comply with strict security hygiene in Milestone 03, the database API credentials **are not** hardcoded in the codebase. 
 
-### 1. Database Setup (Supabase)
-The app integrates with Supabase via a local Node.js Express Server.
-The configuration keys have been built securely into the new `server.js` route handlers. No manual config is required for the demo environment.
+You must create a local `.env` file in the root directory before launching:
+1. Create a file named exactly `.env` right next to the `server.js` file.
+2. Add the following line structure, replacing the placeholder values with the actual project grading keys:
+```bash
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-### 2. Running the Application
-This application uses a full Client-Server architecture. The frontend dynamically fetches data from the custom Node.js REST API. You must start the Node server.
+### 4. Start the Server
+Once dependencies are installed and the `.env` file is correctly configured in the root, boot the backend server by running:
+```bash
+node server.js
+```
 
-1. Clone the repo: `git clone https://github.com/jibinator1/CP476-Group-Project`
-2. Open your terminal and navigate to the project directory.
-3. Install backend dependencies: `npm install`
-4. Start the backend server: `node server.js`
-5. Open your browser and navigate to `http://localhost:3000`. The Express server will automatically route you to the `pages/log-in.html` interface.
-6. **Authentication**: Use the authentication portal to Sign Up or Log In. You can use native test credentials (e.g., Email: `manager@gmail.com`, Password: `password`) to enter the Manager view.
-7. **Customer View**: You can also select "Browse as Customer" to view the publicly accessible endpoints (`customer-dashboard.html`) without logging in.
+### 5. Open the Application
+The Node.js server will spin up the backend APIs and simultaneously serve the static HTML frontend. 
+Open any modern web browser and navigate directly to:
 
-## Project Structure
-- /docs - Documentation and meeting notes.
-- /src - Source code
-- README.md - Project overview
+**[http://localhost:3000/pages/log-in.html](http://localhost:3000/pages/log-in.html)**
 
-## Status & Milestone 3 Final Fulfillment
-
-Milestone 3 (Final) incorporates full-stack integration and final project documentation, fulfilling all course criteria:
-
-- **Full-Stack Functionality & Completeness (35 pts)**: The application successfully implements end-to-end functionality integrating the front-end JS workflow (in `inventory.js`), the API bridge (`api-bridge.js`), and the Supabase backend service (`inventoryService.js`), fully supporting CRUD for products.
-- **Code Quality & Maintainability (10 pts)**: The codebase is well-organized with clear naming conventions, separation of concerns (frontend assets, backend API, distinct page views), and consistent formatting across JS and CSS modules.
-- **Database Integration Quality (10 pts)**: Fully integrated with Supabase. Efficient `select`, `insert`, `update`, and `delete` queries handle core data securely, utilizing database constraints and ensuring state integrity. 
-- **Input Validation & Security (10 pts)**: The solution validates required fields, properly converts data types (Numbers via `parseFloat`/`parseInt`), rejects empty mandatory submissions, handles default fallback states for invalid numeric inputs, and securely queries without dangerous concatenations via Supabase JS policies.
-- **Testing Summary Report (15 pts)**: Comprehensive testing strategies, manual E2E workflows, and findings are documented in the **Testing Summary Report** (located in the `docs/` folder).
-- **Final Demo Video (15 pts)**: [Insert Final Demo Video Link Here] (Walks through the application workflow, architecture overview, and testing highlights in under 7 minutes).
-- **Project Tracking & Documentation (5 pts)**: Project features have been continually tracked via GitHub projects/Kanban. See the activity blog/reflective summary included with this submission for more details.
-
-## Project Management
-
-- **George Xie**: Implemented front-end UI components and logic, managed state, and integrated with Supabase backend.
-- **Jibin Im**: Designed and implemented the Supabase backend, including database schema, API endpoints, logic models, and testing summary.
-- **Calvin Nguyen**: Worked on front-end UI tracking, project tracking coordination, and demo testing.
+---
+### 🛠 Activity Log / Reflective Summary
+*For grading requirements:* Our migration to a Full-Stack architecture successfully consolidated all our rogue client-side database calls into a centralized, secure Express API gateway. We learned how to manipulate environment variables (`dotenv`) rather than leaking API keys to the public DOM, significantly improving our overall hygiene. Furthermore, integrating strict server-side validation into our Node API routes dramatically improved the resilience of our data flow against badly behaving client interfaces.
