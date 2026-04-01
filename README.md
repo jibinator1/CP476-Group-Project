@@ -2,7 +2,7 @@
 
 A full-stack, secure inventory management system built with Node.js, Express, and Supabase PostgreSQL. This project is the final submission for Milestone 03.
 
-## 🚀 Setup & Execution (Running Locally)
+## Setup & Execution (Running Locally)
 
 Follow these exact steps to run the application from a completely clean machine setup.
 
@@ -38,7 +38,3 @@ The Node.js server will spin up the backend APIs and simultaneously serve the st
 Open any modern web browser and navigate directly to:
 
 **[http://localhost:3000/pages/log-in.html](http://localhost:3000/pages/log-in.html)**
-
----
-### 🛠 Activity Log / Reflective Summary
-*For grading requirements:* Our migration to a Full-Stack architecture successfully consolidated all our rogue client-side database calls into a centralized, secure Express API gateway. We learned how to manipulate environment variables (`dotenv`) rather than leaking API keys to the public DOM, significantly improving our overall hygiene. Furthermore, integrating strict server-side validation into our Node API routes dramatically improved the resilience of our data flow against badly behaving client interfaces.
